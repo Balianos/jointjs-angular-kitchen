@@ -52,21 +52,48 @@ angular.module('clientIO').directive('rappid', [function() {
                 });
             }
 
+            // console.log(joint.shapes.html.Element)
+
             stencil = new joint.ui.Stencil({
                 graph: graph,
                 paper: paper,
-                width: 240,
+                width: 300,
                 groups: scope.data.stencil.groups,
                 search: scope.data.stencil.search
             }).on('filter', layout);
 
+
+
             $('.stencil-container', element).append(stencil.render().el);
+
+
+            // console.log(scope.data.stencil.shapes);
 
             _.each(scope.data.stencil.shapes, function(shapes, groupName) {
                 stencil.load(shapes, groupName);
                 layout(stencil.getGraph(groupName));
                 stencil.getPaper(groupName).fitToContent(1,1,10);
             });
+
+
+             data = {
+                "toto":"tata",
+                "1":"2",
+                "tintin":"milou",
+                "test":"tosts",
+                "tutu":"titi"
+            }
+
+             create_custom_stakeHolder_shape(data);
+
+             var r3 = new joint.shapes.basic.stakeHolder({
+                position: { x:10, y: 10}
+             })
+
+            var link = new joint.dia.Link();
+
+            stencil.load([r3], 'basic');
+
 
             scope.components.stencil = stencil;
         },
@@ -270,32 +297,26 @@ angular.module('clientIO').directive('rappid', [function() {
     ];
 
     return {
-
         restrict: 'E',
-
         replace: true,
-
         templateUrl: './templates/rappid.html',
-
         scope: {
             title: '@',
             source: '@'
         },
-
         controller: ['$scope', 'rappidData', function($scope, rappidData) {
-
             // container of all jointjs objects/plugins
             $scope.components = {};
             $scope.source = "./data/basic.json";
             rappidData.get($scope.source).success(function(data) {
                 $scope.data = _.extend({ stencil: {}, inspector: {}}, data);
+                // console.log($scope.data);
             }).error(function() {
                 $scope.data = { stencil: {}, inspector: {}};
             });
         }],
 
         link: function(scope, element, attrs) {
-
             var unbindOnData = scope.$watch('data', function(data) {
                 if (!data) return;
                 // run all initalizators
